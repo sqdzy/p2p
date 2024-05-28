@@ -1,0 +1,124 @@
+{% load static %}
+{% load custom_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль пользователя - {{ user.username }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <header class="bg-dark py-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <a href="/" class="text-white font-weight-bold">P2P Маркет</a>
+                </div>
+                <div class="col-md-6 text-right">
+                    <nav>
+                        <a href="/listing" class="text-white mr-3">Маркет</a>
+                        <a href="{% if request.user.is_authenticated %}/user/{{ request.user.username }}{% else %}/auth{% endif %}" class="text-white mr-3">
+                            {% if request.user.is_authenticated %}
+                                {{ request.user.username }}
+                            {% else %}
+                                Авторизация
+                            {% endif %}
+                        </a>
+                        {% if request.user.is_authenticated %}
+                            <a href="/logout" class="text-white mr-3">Выйти</a>
+                        {% endif %}
+{% if preferred_currency in currency_rates and preferred_currency %}
+                            <span class="text-white mr-3">{{ preferred_currency }}: {{ preferred_currency_rate }}</span>
+                            {% else %}
+                            <span class="text-white mr-3">USD: {{currency_rates.USD}}</span>
+                        {% endif %}
+                        <span class="text-white mr-3">EUR: {{currency_rates.EUR}}</span>
+                        <span class="text-white mr-3">CNY: {{currency_rates.CNY}}</span>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container my-5">
+            <h1 class="mb-4">Профиль пользователя: {{ user.username }}</h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Информация о пользователе</h2>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="first_name">Имя:</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </form>
+                     <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Статус:</strong> {{ user.is_seller|yesno:"Продавец,Покупатель" }}</p>
+                    <p><strong>Баланс:</strong> {{ user.balance }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h2>Объявления</h2>
+                    {% if listings %}
+                        <ul>
+                            {% for listing in listings %}
+                                <li>
+                                    <strong>Валюта:</strong> {{ listing.currency_code.currency_name }}<br>
+                                    <strong>Сумма:</strong> {{ listing.amount }}<br>
+                                    <strong>Цена:</strong> {{ listing.price }}<br>
+                                    <strong>Тип:</strong> {{ listing.is_buy|yesno:"Покупка,Продажа" }}<br>
+                                    <strong>Метод оплаты:</strong> {{ listing.payment_method.payment_method_name }}<br>
+                                    <strong>Дата создания:</strong> {{ listing.created_at }}
+                                    <form method="post" action="{% url 'delete_listing' listing_id=listing.listing_id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Удалить</button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Нет объявлений</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <h2>Транзакции</h2>
+            {% if transactions %}
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Время</th>
+                            <th>Валюта</th>
+                            <th>Сумма</th>
+                            <th>Курс</th>
+                            <th>Итого</th>
+                            <th>Тип</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction.transaction_date|date:"Y-m-d" }}</td>
+                                <td>{{ transaction.transaction_date|time:"H:i" }}</td>
+                                <td>{{ transaction.listing.currency_code.currency_name }}</td>
+                                <td>{{ transaction.amount }}</td>
+                                <td>{{ transaction.listing.price }}</td>
+                                <td>{{ transaction.total_price }}</td>
+                                <td>{{ transaction.is_buy|yesno:"Покупка,Продажа" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Нет транзакций</p>
+            {% endif %}
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

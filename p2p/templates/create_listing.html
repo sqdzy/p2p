@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Маркет - Создать объявление</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+</head>
+<body>
+    <header class="bg-dark py-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <a href="/" class="text-white font-weight-bold">P2P Маркет</a>
+                </div>
+                <div class="col-md-6 text-right">
+                    <nav>
+                        <a href="/listing" class="text-white mr-3">Маркет</a>
+                        <a href="
+                        {% if request.session.username %}
+                        /user/{{request.session.username}}
+                        {% else %}
+                        /auth
+                        {% endif %}" class="text-white mr-3">
+                        {% if request.session.username %}
+                        {{ request.session.username }}
+                        {% else %}
+                        Авторизация
+                        {% endif %}
+                        </a>
+                        {% if request.session.user_id %}
+                        <a href="/logout" class="text-white mr-3">Выйти</a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Создать объявление</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="currency_code">Валюта</label>
+                                    <select class="form-control" id="currency_code" name="currency_code" required>
+                                        {% for currency in currencies %}
+                                            <option value="{{ currency.currency_code }}">{{ currency.currency_name }} - {{ currency.currency_rate }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="is_buy">Тип</label>
+                                    <select class="form-control" id="is_buy" name="is_buy" required>
+                                        <option value="buy">Покупка</option>
+                                        <option value="sell">Продажа</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="amount">Количество</label>
+                                    <input type="number" class="form-control" id="amount" name="amount" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="price">Цена</label>
+                                    <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="payment_method">Метод оплаты</label>
+                                    <select class="form-control" id="payment_method" name="payment_method" required>
+                                        {% for payment_method in payment_methods %}
+                                            <option value="{{ payment_method.payment_method_id }}">{{ payment_method.payment_method_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Создать</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

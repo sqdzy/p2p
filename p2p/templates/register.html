@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P2P Маркет - Регистрация</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <header class="bg-dark py-3">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <a href="/" class="text-white font-weight-bold">P2P Маркет</a>
+                </div>
+                <div class="col-md-6 text-right">
+                    <nav>
+                        <a href="/listing" class="text-white mr-3">Маркет</a>
+                        <a href="
+                        {% if request.session.username %}
+                        /user/{{request.session.username}}
+                        {% else %}
+                        /auth
+                        {% endif %}" class="text-white mr-3">
+                        {% if request.session.username %}
+                        {{ request.session.username }}
+                        {% else %}
+                        Авторизация
+                        {% endif %}
+                        </a>
+                        {% if request.session.user_id %}
+                        <a href="/auth/logout" class="text-white mr-3">Выйти</a>
+                        {% endif %}
+{% if preferred_currency in currency_rates and preferred_currency %}
+                            <span class="text-white mr-3">{{ preferred_currency }}: {{ preferred_currency_rate }}</span>
+                            {% else %}
+                            <span class="text-white mr-3">USD: {{currency_rates.USD}}</span>
+                        {% endif %}
+                        <span class="text-white mr-3">EUR: {{currency_rates.EUR}}</span>
+                        <span class="text-white mr-3">CNY: {{currency_rates.CNY}}</span>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Регистрация</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST">
+                                {% csrf_token %}
+                                {% if error %}
+                                    <div class="alert alert-danger">{{ error }}</div>
+                                {% endif %}
+                                <div class="form-group">
+                                    <label for="username">Имя пользователя</label>
+                                    <input type="text" class="form-control" id="username" name="username" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Адрес электронной почты</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Пароль</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm_password">Подтвердите пароль</label>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
+                            </form>
+                            <p class="mt-3">Уже есть аккаунт? <a href="/auth">Авторизуйтесь</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

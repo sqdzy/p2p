@@ -1,0 +1,18 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+header {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+main {
+    min-height: calc(100vh - 100px);
+}
+
+@media (max-width: 767.98px) {
+    header .row > div {
+        text-align: center !important;
+        margin-bottom: 10px;
+    }
+}
